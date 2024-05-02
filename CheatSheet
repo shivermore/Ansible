@@ -1,0 +1,73 @@
+-- General Cool Stuff --
+using the "-o" option will condense output
+#> ansible all -m ping -o
+
+you can use pattern matching with regular expressions in ansible
+~ : use pattern matching
+. : any character
+* : any number
+example: list hosts ending with a 3
+#> ansible ~.*3 --list-hosts
+
+you can ignore host fingerprints by setting the environment variable
+#> ANSIBLE_HOST_KEY_CHECKING=False
+
+you can temp override existing variables using "-e"
+#> ansible all -m ping -e 'ansible_port=622' 
+
+--------------------
+-- SSH Key Stuff --
+- show contents of ~/.ssh/known_hosts file for a particular host
+#> ssh-keygen -H -F myhost1
+
+- copy ssh keys to remote machines without having to login to each one manually
+#> ssh-copy-id user@myhost1
+
+- copy key to multiple systems and automate it such that you don't have to connect and enter the password for each one
+1. install sshpass
+#> sudo apt get sshpass
+
+2. create password.txt
+#> echo mypassword > password.txt
+
+3. create a for loop in bash.
+#> for user in ansible root
+ > do
+ >   for os in ubuntu centos
+ >   do
+ >     for instance in 1 2 3
+ >     do
+ >       sshpass -f password.txt ssh-copy-id -o StrictHostKeyChecking=no ${user}@${os}${instance}
+ >     done
+ >   done
+ > done
+--------------------
+
+- check if ansible can communicat with a specified list of hosts explicitly called out. note: the placement of the comma after the -i ... "-i," ... allows you to directly list the hosts to check rather than using a "hosts" file.
+#> ansible -i,host1,host2,host3 all -m ping
+
+--------------------
+-- Ansible.cfg Files Stuff --
+
+- check what ansible.cfg file you are using
+#> ansible --version
+
+the ansible.cfg file exists in several places with each file having precidence over the other.
+- lowest priority: global default
+- located at /etc/ansible/ansible.cfg
+
+- higher priority: hidden in the user prifile
+- ~/.ansible.cfg
+
+- higher priority: file in current directory
+- /mydirectory/ansible.cfg
+
+- top priority: the environment varialbe ANSIBLE_CONFIG
+- #> echo $ANSIBLE_CONFIG 
+- or list all variables #> env
+--------------------
+
+
+
+
+--------------------
